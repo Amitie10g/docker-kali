@@ -11,7 +11,7 @@ RUN adduser --quiet --add_extra_groups --disabled-password --gecos "" kali && \
     adduser kali sudo && \
     echo "kali:kali" | chpasswd && \
     apt-get update && \
-    apt-get install -y nano lynx tor make && \
+    apt-get install --no-install-suggests -y nano lynx tor make && \
     cd /tmp/kalitorify && \
     make install
 

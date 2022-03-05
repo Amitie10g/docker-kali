@@ -28,15 +28,30 @@ There are five tags:
 
 ## Usage
 
-User and password is ``kali``. Sudo is enabled for that user 
+First, boot up the container in dettached mode:
 
-### Headless
-``docker run -it -v $(pwd}/kali:/home/kali amitie10g/kali-linux:headless``
+```
+docker run -d --name kali -v $(pwd}/kali:/home/kali amitie10g/kali-linux:<tag>
+```
 
-### Desktop using XRDP (use the tag of your choice)
-``docker run -it -v $(pwd}/kali:/home/kali -p 3389:3389 amitie10g/kali-linux``
+Then, connect to interactive shell:
 
-Then, open your Remote Desktop client and login using the ``kali`` username (see above)
+```
+docker exec --user kali -it kali bash
+```
+
+Start XRDP service
+
+```
+docker exec kali service xrdp start
+```
+
+User and password is ``kali``.
+
+### Further options
+* Add ``-p 3389:3389`` to expose Remote Desktop por to connect via XRDP
+* Remove ``-v $(pwd}/kali:/home/kali`` for ephimeral container
+* Remove ``--user kali`` when running ``docker exec`` to get interactive shell as root
 
 ## Building
 Is highly recommended to use [AptCacherNg](https://wiki.debian.org/AptCacherNg) to avoid re-download packages, as Kali needs huge ammount of packages. I provide [AptCacherNg Docker container](https://hub.docker.com/r/amitie10g/apt-cacher-ng); to use it, run
@@ -52,7 +67,16 @@ docker build --build-arg APT_PROXY=172.21.0.2 --network=mynetwork -t amitie10g/k
 ```
 
 ## Caveats
-The Kali Linux base image has been built with the [Phusion B.V.'s base image](https://github.com/phusion/baseimage-docker) project, using the vanilla [Kali Rolling](https://hub.docker.com/r/kalilinux/kali-rolling) container base image. This means the container uses [s6-overlay](https://github.com/just-containers/s6-overlay).
+This is the vanilla Kali Linux docker base image with meta packages installed. Sudo is enmabled for the user ``kali``; however, due the lack of [polkit](https://wiki.debian.org/PolicyKit) graphical agent, you need to use ``pkttyagent`` from the terminal emulator:
+
+``pkttyagent -p $(echo $$) | pkexec <program>``
+
+Also, you need to start the services ``xrdp`` for desktop access and ``dbus`` for performing actions required by it (polkit) **before** opening a Remote Desktop connection:
+
+```
+service dbus start
+service xrdp start
+```
 
 ## Licensing
 

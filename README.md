@@ -1,4 +1,4 @@
-# Kali Linux plus kalitorify on Docker image
+# Kali Linux plus kalitorify on Docker image (WIP)
 This is an attemp to bring Kali Linux into a Docker image, using the [Kali Linux rolling](https://hub.docker.com/r/kalilinux/kali-rolling) base image.
 
 [Dockerfile](https://github.com/Amitie10g/kali-rolling/blob/main/Dockerfile)

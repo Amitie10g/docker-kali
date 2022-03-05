@@ -67,16 +67,7 @@ docker build --build-arg APT_PROXY=172.21.0.2 --network=mynetwork -t amitie10g/k
 ```
 
 ## Caveats
-This is the vanilla Kali Linux docker base image with meta packages installed. Sudo is enmabled for the user ``kali``; however, due the lack of [polkit](https://wiki.debian.org/PolicyKit) graphical agent, you need to use ``pkttyagent`` from the terminal emulator:
-
-``pkttyagent -p $(echo $$) | pkexec <program>``
-
-Also, you need to start the services ``xrdp`` for desktop access and ``dbus`` for performing actions required by it (polkit) **before** opening a Remote Desktop connection:
-
-```
-service dbus start
-service xrdp start
-```
+Remote connections via XRDP/VNC make unable to run graphical programs that needs **superuser** using **polkit**; please see [this thread](https://askubuntu.com/questions/1174742/not-authorized-to-perform-operation-polkit-authority-not-available) at AskUbuntu. You're still able to run console programs using **sudo**.
 
 ## Licensing
 

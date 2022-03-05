@@ -52,16 +52,7 @@ docker build --build-arg APT_PROXY=172.21.0.2 --network=mynetwork -t amitie10g/k
 ```
 
 ## Caveats
-This is the vanilla Kali Linux docker base image with meta packages installed. Sudo is enmabled for the user ``kali``; however, due the lack of [polkit](https://wiki.debian.org/PolicyKit) graphical agent, you need to use ``pkttyagent`` from the terminal emulator:
-
-``pkttyagent -p $(echo $$) | pkexec <program>``
-
-Also, you need to start the services ``xrdp`` for desktop access and ``dbus`` for performing actions required by it (polkit) **before** opening a Remote Desktop connection:
-
-```
-service dbus start
-service xrdp start
-```
+The Kali Linux base image has been built with the [Phusion B.V.'s base image](https://github.com/phusion/baseimage-docker) project, using the vanilla [Kali Rolling](https://hub.docker.com/r/kalilinux/kali-rolling) container base image. This means the container uses [s6-overlay](https://github.com/just-containers/s6-overlay).
 
 ## Licensing
 

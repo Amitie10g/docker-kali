@@ -67,7 +67,7 @@ docker build --build-arg APT_PROXY=172.21.0.2 --network=mynetwork -t amitie10g/k
 ```
 
 ## Caveats
-* This is a work in progress; everything will work seamlessly. At least, **Metasploit** worked.
+* This is a work in progress; everything will work seamlessly. At least, **Metasploit** worked during my tests.
 * Remote connections via XRDP/VNC make unable to run graphical programs that needs **superuser** using **polkit**; please see [this thread](https://askubuntu.com/questions/1174742/not-authorized-to-perform-operation-polkit-authority-not-available) at AskUbuntu. You're still able to run console programs using **sudo**.
 
 ## Licensing

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# 20_postgres
+# 20_postgres.sh
 #
 
 SERVICE=postgres

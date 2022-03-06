@@ -38,9 +38,9 @@ There are several tags for you:<sup>[1]</sup>
 ### Footnotes
 
 * <sup>[1]</sup> The Dockerfile applies each RUN instruction in order to optimize the building contexts. Lower RUN instructions are commented to use only the upper ones, allowing several tags.
-* <sup>[2]</sup> The base image has been built with the [Phusion's base image](https://github.com/phusion/baseimage-docker) project, using the vanilla [kali-rolling](https://hub.docker.com/r/kalilinux/kali-rolling) container base image.
+* <sup>[2]</sup> The base image has been built with the [Phusion's base image](https://github.com/phusion/baseimage-docker) project, using the vanilla [kali-rolling](https://hub.docker.com/r/kalilinux/kali-rolling) container base image. This container base images replaces [systemd](https://wiki.debian.org/systemd) with [s6-overlay](https://github.com/just-containers/s6-overlay), making easier to bring the desired services, but causing issues on programs that assumes the presence of systemctl; the way to handle the services is with the ```service`` command.
 * <sup>[3]</sup> desktop, headless or both.
-* <sup>43]</sup> Those containers are not available at Hub due the huge size (15 and 25 GB); you need to build them by yourself.
+* <sup>[4]</sup> Those containers are not available at Hub due the huge size (15 and 25 GB); you need to build them by yourself.
 
 ## Usage
 

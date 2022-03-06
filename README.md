@@ -62,11 +62,18 @@ Start XRDP service
 docker exec kali service xrdp start
 ```
 
+Start kalitorify
+
+```
+docker exec kali kalitorify --tor
+```
+
 User and password is ``kali``.
 
 ### Further options
-* Add ``-p 3389:3389`` to expose Remote Desktop por to connect via XRDP
-* Remove ``-v $(pwd}/kali:/home/kali`` for ephimeral container
+* Add ``-p 3389:3389`` when running ``docker run`` to expose Remote Desktop por to connect via XRDP
+* Add ``--cap-add=NET_ADMIN --cap-add=NET_RAW`` when running ``docker run`` to allow kalitorify to modify iptables and set up it successfully
+* Remove ``-v $(pwd}/kali:/home/kali`` when running ``docker exec`` for ephimeral container
 * Remove ``--user kali`` when running ``docker exec`` to get interactive shell as root
 
 ## Building

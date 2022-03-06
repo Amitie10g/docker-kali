@@ -9,7 +9,7 @@ There are several tags for you:<sup>[1]</sup>
 
 * ``amitie10g/baseimage:kali`` the base image built with the [Phusion's base image](https://github.com/phusion/baseimage-docker) project<sup>[2]</sup>
 
-* ``base`` base image with basic tools and TOR
+* ``base`` base image with basic tools TOR and kalitorify
   * ``nano``
   * ``lynx``
   * ``tor``

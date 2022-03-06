@@ -9,11 +9,11 @@ There are several tags for you:<sup>[1]</sup>
 
 * ``amitie10g/baseimage:kali`` the base image built with the [Phusion's base image](https://github.com/phusion/baseimage-docker) project<sup>[2]</sup>
 
-* ``base`` base image with basic tools TOR and kalitorify
+* ``base`` base image with basic tools, TOR, and kalitorify
   * ``nano``
   * ``lynx``
-  * ``tor``
   * ``make``
+  * ``tor``
 
 * ``latest`` ``desktop`` base desktop (XFCE and XRDP) plus Kali top 10 tools and Midori browser (small)<sup>[3]</sup>
   * ``kali-tools-top10``
@@ -32,7 +32,7 @@ There are several tags for you:<sup>[1]</sup>
 * ``large`` larger Kali Linux toolset (huge, not available)<sup>[4]</sup>
   * ``kali-linux-large``
 
-* ``full`` ``everything`` full Kali Linux toolset (hube, not available)<sup>[4]</sup>
+* ``full`` ``everything`` full Kali Linux toolset (huge, not available)<sup>[4]</sup>
   * ``kali-linux-everything``
 
 ### Footnotes
@@ -56,13 +56,13 @@ Then, connect to interactive shell:
 docker exec --user kali -it kali bash
 ```
 
-Start XRDP service
+Start XRDP service (automatically started by default)
 
 ```
 docker exec kali service xrdp start
 ```
 
-Start kalitorify
+Start kalitorify (not automatically started by default)
 
 ```
 docker exec kali kalitorify --tor
@@ -77,7 +77,7 @@ User and password is ``kali``.
 * Remove ``--user kali`` when running ``docker exec`` to get interactive shell as root
 
 ## Building
-Is highly recommended to use [AptCacherNg](https://wiki.debian.org/AptCacherNg) to avoid re-download packages, as Kali needs huge ammount of packages. I provide [AptCacherNg Docker container](https://hub.docker.com/r/amitie10g/apt-cacher-ng); to use it, run
+It is highly recommended to use [AptCacherNg](https://wiki.debian.org/AptCacherNg) to avoid re-download packages, as Kali needs huge ammount of packages. I provide [AptCacherNg Docker container](https://hub.docker.com/r/amitie10g/apt-cacher-ng); to use it, run
 
 ```
 docker network create mynetwork
@@ -90,8 +90,18 @@ docker build --build-arg APT_PROXY=172.21.0.2 --network=mynetwork -t amitie10g/k
 ```
 
 ## Caveats
-* This is a work in progress; everything will work seamlessly. At least, **Metasploit** worked during my tests.
-* Remote connections via XRDP/VNC make unable to run graphical programs that needs **superuser** using **polkit**; please see [this thread](https://askubuntu.com/questions/1174742/not-authorized-to-perform-operation-polkit-authority-not-available) at AskUbuntu. You're still able to run console programs using **sudo**.
+* This is a work in progress; not everything will work seamlessly. At least, **Metasploit** worked during my tests.
+* Remote connections via XRDP/VNC make unable to run graphical programs that needs **superuser** using **polkit** due settings; please see [this thread](https://askubuntu.com/questions/1174742/not-authorized-to-perform-operation-polkit-authority-not-available) at AskUbuntu. You're still able to run console programs using **sudo**.
+
+## FAQ
+* Q: Why you created this project<br>
+  A: I'm preparing for diploma in cybersecurity, and as my hobby is create Docker containers, I created this as part of my tasks. As this will be useful for everyone, I'be compromised to maintain this project.
+
+* Q: Why s6-overlay<br>
+  A: Because this eases the process of bringing required services for tools (eg. Postgres for Metasploit).
+
+* Q: Why XRDP instead o VNC?<br>
+  A: a) most of the users uses Windows, and the Remote Desktop client is integrated, and runs seamlessly; and b) performance.
 
 ## Licensing
 

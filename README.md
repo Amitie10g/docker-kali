@@ -1,30 +1,46 @@
 # Kali Linux plus kalitorify on Docker image (WIP)
 This is an attemp to bring Kali Linux into a Docker image, using the [Kali Linux rolling](https://hub.docker.com/r/kalilinux/kali-rolling) base image.
 
-[Dockerfile](https://github.com/Amitie10g/kali-rolling/blob/main/Dockerfile)
+[Dockerfile](https://github.com/Amitie10g/docker-kali/blob/main/Dockerfile)
 
 ## Tags
 
-There are five tags:
+There are several tags for you:<sup>[1]</sup>
 
-* ``latest`` ``desktop`` base desktop (XFCE and XRDP) plus Kali top 10 tools (small)
+* ``amitie10g/baseimage:kali`` the base image built with the [Phusion's base image](https://github.com/phusion/baseimage-docker) project<sup>[2]</sup>
+
+* ``base`` base image with basic tools and TOR
+  * ``nano``
+  * ``lynx``
+  * ``tor``
+  * ``make``
+
+* ``latest`` ``desktop`` base desktop (XFCE and XRDP) plus Kali top 10 tools and Midori browser (small)<sup>[3]</sup>
   * ``kali-tools-top10``
   * ``kali-desktop-xfce``
   * ``xrdp``
+  * ``midori``
 
-* ``headless`` base Kali Linux toolset that includes CLI-only tools (large)
+* ``headless`` base Kali Linux toolset that includes CLI-only tools (large)<sup>[3]</sup>
   * ``kali-linux-headless``
 
-* ``desktop-plus`` desktop plus headless (large)
+* ``desktop-plus`` both desktop and headless (large)
 
-* ``default`` default Kali Linux toolset (large)
+* ``default`` default Kali Linux toolset (larger)
    * ``kali-linux-default``
 
-* ``large`` larger Kali Linux toolset (not available)
+* ``large`` larger Kali Linux toolset (huge, not available)<sup>[4]</sup>
   * ``kali-linux-large``
 
-* ``full`` ``everything`` full Kali Linux toolset (not available)
+* ``full`` ``everything`` full Kali Linux toolset (hube, not available)<sup>[4]</sup>
   * ``kali-linux-everything``
+
+### Footnotes
+
+* <sup>[1]</sup> The Dockerfile applies each RUN instruction in order to optimize the building contexts. Lower RUN instructions are commented to use only the upper ones, allowing several tags.
+* <sup>[2]</sup> The base image has been built with the [Phusion's base image](https://github.com/phusion/baseimage-docker) project, using the vanilla [kali-rolling](https://hub.docker.com/r/kalilinux/kali-rolling) container base image.
+* <sup>[3]</sup> desktop, headless or both.
+* <sup>43]</sup> Those containers are not available at Hub due the huge size (15 and 25 GB); you need to build them by yourself.
 
 ## Usage
 

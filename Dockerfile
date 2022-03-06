@@ -22,7 +22,7 @@ RUN adduser --quiet --add_extra_groups --disabled-password --gecos "" kali && \
 # :: Install either desktop, headless, or both
 
 # XFCE4 Desktop and top 10 toolset (latest) (needed for desktop)
-RUN apt-get install -y kali-desktop-xfce xrdp kali-tools-top10
+RUN apt-get install -y kali-desktop-xfce xrdp kali-tools-top10 midori
 
 # Toolsets that don't require GUI (headless) (needed for headless)
 #RUN apt-get install -y kali-linux-headless

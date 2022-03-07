@@ -107,3 +107,9 @@ docker build --build-arg APT_PROXY=172.21.0.2 --network=mynetwork -t amitie10g/k
 
 * The Dockerfile is released into the Public domain (The Unlicense)
 * The software contained in the container images are subjected to the respective licenses
+
+## Related projects
+
+* [kalitorify](https://github.com/Amitie10g/kalitorify/tree/master)
+* [AptCacherNg](https://github.com/Amitie10g/AptCacherNg-docker)
+* [Covenant](https://github.com/Amitie10g/Covenant)

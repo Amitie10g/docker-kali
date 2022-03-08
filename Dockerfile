@@ -1,4 +1,6 @@
-FROM amitie10g/baseimage:kali
+# kali or kali-bleeding-edge
+ARG BASEIMAGE_TAG=kali
+FROM amitie10g/baseimage:$BASEIMAGE_TAG
 
 ARG DEBIAN_FRONTEND=noninteractive
 

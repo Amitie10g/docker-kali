@@ -1,0 +1,74 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    env:
+      - 'TAG_NAME=${TAG_NAME}'
+      - >-
+        DOCKERFILE_HEAD= ARG REPO_NAME=kali-rolling \n FROM
+        gcr.io/$PROJECT_ID/$$REPO_NAME:upstream \n ARG
+        DEBIAN_FRONTEND=noninteractive \n COPY init/ /etc/my_init.d/ \n COPY
+        kalitorify /tmp/kalitorify \n COPY excludes /etc/dpkg/dpkg.cfg.d/ \n RUN
+        ls /tmp/kalitorify && \ \n 
+            adduser --quiet --add_extra_groups \
+            --disabled-password --gecos "" kali && \ \n
+            adduser kali sudo && \ \n
+            echo "kali:kali" | chpasswd && \ \n
+            apt-get update && \ \n
+            apt-get install --no-install-suggests -y \ \n
+            nano lynx tor make kali-linux-wsl iptables \n
+        RUN cd /tmp/kalitorify && make install
+      - >-
+        DESKTOP=RUN apt-get install -y kali-desktop-xfce xrdp kali-tools-top10
+        chromium
+      - HEADLESS=RUN apt-get install -y kali-linux-headless
+      - DEFAULT=RUN apt-get install -y kali-linux-default
+      - LARGE=RUN apt-get install -y kali-linux-large
+      - EVERYTHING=RUN apt-get install -y kali-linux-everything
+      - DOCKERFILE_TAIL=RUN /bd_build/cleanup.sh
+    script: |
+      #!/usr/bin/env bash
+      case $TAG_NAME in
+        base)            DOCKERFILE="$DOCKERFILE_HEAD\n$DOCKERFILE_TAIL";;
+        desktop|latest)  DOCKERFILE="$DOCKERFILE_HEAD\n$DESKTOP\n$DOCKERFILE_TAIL";;
+        headless)        DOCKERFILE="$DOCKERFILE_HEAD\n$HEADLESS\n$DOCKERFILE_TAIL";;
+        desktop-plus)    DOCKERFILE="$DOCKERFILE_HEAD\n$DESKTOP\n$HEADLESS\n$DOCKERFILE_TAIL";;
+        large)           DOCKERFILE="$DOCKERFILE_HEAD\n$DESKTOP\n$LARGE\n$DOCKERFILE_TAIL";;
+        full|everything) DOCKERFILE="$DOCKERFILE_HEAD\n$DESKTOP\n$EVERYTHING\n$DOCKERFILE_TAIL";;
+        *)               DOCKERFILE="$DOCKERFILE_HEAD\n$DESKTOP\n$DEFAULT\n$DOCKERFILE_TAIL";;
+      esac
+      echo -e "$DOCKERFILE" > Dockerfile
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - '-c'
+      - docker login --username=$$USERNAME --password=$$PASSWORD
+    entrypoint: bash
+    secretEnv:
+      - USERNAME
+      - PASSWORD
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - '-c'
+      - docker buildx create --use
+    entrypoint: bash
+  - name: gcr.io/cloud-builders/git
+    args:
+      - submodule
+      - update
+      - '--init'
+      - '--recursive'
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - '-c'
+      - >-
+        docker buildx build --platform=linux/amd64,linux/arm64 -t
+        $$USERNAME/${REPO_NAME}:${TAG_NAME} ${_ARGS} --push .
+    entrypoint: bash
+    secretEnv:
+      - USERNAME
+options:
+  logging: CLOUD_LOGGING_ONLY
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/docker-password/versions/1
+      env: PASSWORD
+    - versionName: projects/$PROJECT_ID/secrets/docker-username/versions/1
+      env: USERNAME

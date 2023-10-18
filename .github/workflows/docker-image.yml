@@ -1,0 +1,131 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: false
+
+env:
+  DESKTOP: RUN apt-get install -y kali-desktop-xfce xrdp kali-tools-top10 dbus-x11
+  HEADLESS: RUN apt-get install -y kali-linux-headless
+  DEFAULT: RUN apt-get install -y kali-linux-default
+  LARGE: RUN apt-get install -y kali-linux-large
+  EVERYTHING: RUN apt-get install -y kali-linux-everything
+  BASE: |
+    ARG DEBIAN_FRONTEND=noninteractive
+    COPY init/ /etc/my_init.d/
+    COPY kalitorify /tmp/kalitorify
+    COPY excludes /etc/dpkg/dpkg.cfg.d/
+    RUN adduser --quiet --add_extra_groups --disabled-password --gecos \"\" kali && \
+      adduser kali sudo && \
+      echo "kali:kali" | chpasswd && \
+      apt-get update && \
+      apt-get install --no-install-suggests -y \
+      nano lynx tor make kali-linux-wsl iptables
+    RUN cd /tmp/kalitorify && make install
+  DOCKERFILE_TAIL: |
+    RUN /bd_build/cleanup.sh
+    USER root
+    WORKDIR /root
+
+jobs:
+
+  Rolling:
+    env:
+      DOCKERFILE_HEAD: |
+        FROM ${{ secrets.DOCKERHUB_USERNAME }}/kali-rolling:upstream
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Prepare
+        run: docker buildx create --use
+      - name: Build base
+        run: >
+          printf "%s\n%s\n%s" "$DOCKERFILE_HEAD" "$BASE" "$DOCKERFILE_TAIL" |
+          docker buildx build
+          --platform=linux/amd64,linux/arm64
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-rolling:base
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/kali:base
+          -f - --push .
+      - name: Build headless
+        run: >
+         printf "%s\n%s\n%s\n%s" "$DOCKERFILE_HEAD" "$BASE" "$HEADLESS" "$DOCKERFILE_TAIL" |
+         docker buildx build --platform=linux/amd64,linux/arm64
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-rolling:headless
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali:headless
+         -f - --push .
+      - name: Build desktop
+        run: >
+         printf "%s\n%s\n%s\n%s" "$DOCKERFILE_HEAD"  "$BASE" "$DESKTOP" "$DOCKERFILE_TAIL" |
+         docker buildx build --platform=linux/amd64,linux/arm64
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-rolling:desktop
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-rolling
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali:desktop
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali
+         -f - --push .
+
+  Bleeding-edge:
+    env:
+      DOCKERFILE_HEAD: |
+        FROM ${{ secrets.DOCKERHUB_USERNAME }}/kali-bleeding-edge:upstream
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Prepare
+        run: docker buildx create --use
+      - name: Build base
+        run: >
+          printf "%s\n%s\n%s" "$DOCKERFILE_HEAD" "$BASE" "$DOCKERFILE_TAIL" |
+          docker buildx build
+          --platform=linux/amd64,linux/arm64
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-bleeding-edge:base
+          -f - --push .
+      - name: Build headless
+        run: >
+         printf "%s\n%s\n%s\n%s" "$DOCKERFILE_HEAD" "$BASE" "$HEADLESS" "$DOCKERFILE_TAIL" |
+         docker buildx build --platform=linux/amd64,linux/arm64
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-bleeding-edge:headless
+         -f - --push .
+      - name: Build desktop
+        run: >
+         printf "%s\n%s\n%s\n%s" "$DOCKERFILE_HEAD"  "$BASE" "$DESKTOP" "$DOCKERFILE_TAIL" |
+         docker buildx build --platform=linux/amd64,linux/arm64
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-bleeding-edge:desktop
+         -t ${{ secrets.DOCKERHUB_USERNAME }}/kali-bleeding-edge
+         -f - --push .
